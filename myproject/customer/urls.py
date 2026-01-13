@@ -16,17 +16,37 @@ Including another URLconf
 """
 
 from django.urls import path
-from .views import CustomerAPI
+from .views import CustomerAPI, CustomerLoginAPI, CustomerForgotPasswordAPI, CustomerVerifyOTPAPI, CustomerResetPasswordAPI
 from . import views
+
+# urlpatterns = [
+#     path('', CustomerAPI.as_view(), name='root'),
+#     path('customer/', views.CustomerAPI.as_view(), name='customer_api'),
+#     path('<int:id>/', CustomerAPI.as_view(), name='customer_detail'), 
+# ]
+
 
 urlpatterns = [
     path('', CustomerAPI.as_view(), name='root'),
     path('customer/', views.CustomerAPI.as_view(), name='customer_api'),
-    path('<int:id>/', CustomerAPI.as_view(), name='customer_detail'), 
+    path('<int:id>/', CustomerAPI.as_view(), name='_detail'), 
 
-
-# wrong =>
-    # path('', views.get, name='CustomerAPI'),
-    # path("customer", views.get, name="customer"),
-    # path("", views.get, name="customer"),
+    path('login/', CustomerLoginAPI.as_view(), name='login'),
+    path('register/', views.CustomerAPI.as_view(), name='customer_api'),
+    
+    path('forgot-password/', CustomerForgotPasswordAPI.as_view()),
+    path('verify-otp/', CustomerVerifyOTPAPI.as_view()),
+    path('reset-password/', CustomerResetPasswordAPI.as_view()),
 ]
+
+
+# urlpatterns = [
+#     path('customers/', CustomerAPI.as_view()),
+#     path('customers/<int:id>/', CustomerAPI.as_view()),
+#     path('customers/login/', CustomerLoginAPI.as_view()),
+#     # path('customers/telegram-link/', CustomerTelegramLinkTokenAPI.as_view()),
+#     path('customers/forgot-password/', CustomerForgotPasswordAPI.as_view()),
+#     path('customers/verify-otp/', CustomerVerifyOTPAPI.as_view()),
+#     path('customers/reset-password/', CustomerResetPasswordAPI.as_view()),
+# ]
+

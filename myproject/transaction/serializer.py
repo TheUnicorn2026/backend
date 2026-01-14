@@ -11,8 +11,13 @@ class TransactionSerializer(serializers.ModelSerializer):
     debit_amt = serializers.IntegerField(default=0)
 
     customer_id = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all())
-    deposite_id = serializers.PrimaryKeyRelatedField(queryset=Deposite.objects.all())
-    expense_id = serializers.PrimaryKeyRelatedField(queryset=Expense.objects.all())
+
+    # deposite_id = serializers.PrimaryKeyRelatedField(queryset=Deposite.objects.all())
+    # expense_id = serializers.PrimaryKeyRelatedField(queryset=Expense.objects.all())
+
+    deposite_type = serializers.CharField(default="other")
+    expense_type = serializers.CharField(default="other")
+    description = serializers.CharField(default="")
 
     class Meta:
         model = Transaction

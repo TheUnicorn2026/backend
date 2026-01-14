@@ -218,6 +218,7 @@ class CustomerResetPasswordAPI(APIView):
         reset_token = request.data.get("reset_token")
         new_password = request.data.get("new_password")
 
+        print(email, new_password, reset_token)
         if not email or not reset_token or not new_password:
             return Response({"error": "missing fields"}, status=400)
 

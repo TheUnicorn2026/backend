@@ -6,6 +6,7 @@ from expense.models import Expense
 from django.utils import timezone
 
 # Create your models here.
+
 class Transaction(models.Model):
     transaction_id = models.CharField(max_length=50)
     date = models.DateTimeField(auto_now_add=True)

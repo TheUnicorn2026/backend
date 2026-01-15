@@ -121,13 +121,22 @@ class LoginAPI(APIView):
         
 
 def send_telegram_message(chat_id, text):
-    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
+    TELEGRAM_BOT_TOKEN = "8356288691:AAFneoqDVHxF88rrFLNXbx-6ucoRVWiumm4"
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {"chat_id": chat_id, "text": text}
+
     try:
-        r = requests.post(url, json=payload, timeout=5)
-        return r.ok
-    except Exception:
+        response = requests.post(url, json=payload, timeout=10)
+        if response.ok:
+            print("Message sent successfully!")
+            return True
+        else:
+            print(f"Failed to send message. Response code: {response.status_code}, Response text: {response.text}")
+            return False
+    except Exception as e:
+        print(f"Error occurred while sending message: {e}")
         return False
+
 
 class TelegramLinkTokenAPI(APIView):
     permission_classes = [IsAuthenticated]

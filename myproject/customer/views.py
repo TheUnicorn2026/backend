@@ -111,7 +111,11 @@ class CustomerLoginAPI(APIView):
 # TELEGRAM MESSAGE HELPER
 # --------------------------------------------------
 def send_telegram_message(chat_id, text):
-    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
+    TELEGRAM_BOT_TOKEN = "8356288691:AAFneoqDVHxF88rrFLNXbx-6ucoRVWiumm4"
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+
+    # url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {"chat_id": chat_id, "text": text}
     try:
         return requests.post(url, json=payload, timeout=5).ok

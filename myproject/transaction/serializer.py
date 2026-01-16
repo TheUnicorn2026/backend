@@ -10,7 +10,8 @@ class TransactionSerializer(serializers.ModelSerializer):
     credit_amt = serializers.IntegerField(default=0)
     debit_amt = serializers.IntegerField(default=0)
 
-    customer_id = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all())
+    # customer_id = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all())
+    customer_id = serializers.CharField(source='customer_id_id')
 
     # deposite_id = serializers.PrimaryKeyRelatedField(queryset=Deposite.objects.all())
     # expense_id = serializers.PrimaryKeyRelatedField(queryset=Expense.objects.all())

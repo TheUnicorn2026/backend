@@ -22,7 +22,9 @@ from . import views
 urlpatterns = [
     path('', TransactionAPI.as_view(), name='root'),
     path('transaction/', views.TransactionAPI.as_view(), name='transaction_api'),
-    path('<int:id>/', TransactionAPI.as_view(), name='transaction_detail'), 
+    # path('<int:id>/', TransactionAPI.as_view(), name='transaction_detail'), 
+    path('transactions/<int:customer_id>/', views.TransactionAPI.as_view()),
+
     path('upload/', views.CSVUploadAPI.as_view(), name='csvupload_api'),
 
 

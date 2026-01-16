@@ -5,6 +5,12 @@ from expense.models import Expense
 
 from django.utils import timezone
 
+from django import forms
+
+
+class CsvUploadForm(forms.Form):
+    csv_file = forms.FileField()
+
 # Create your models here.
 
 class Transaction(models.Model):
@@ -19,11 +25,11 @@ class Transaction(models.Model):
     deposite_type = models.CharField(default="other")
     expense_type = models.CharField(default="other")
 
+
     customer_id = models.ForeignKey(
         Customer,
         on_delete=models.CASCADE,
-        related_name="f_customer_id",
-        default=0
+        related_name="transactions",
     )
     
     # deposite_id = models.ForeignKey(

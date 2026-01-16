@@ -1,6 +1,9 @@
 import random
 from datetime import timedelta
 
+import csv
+from rest_framework.parsers import MultiPartParser, FormParser
+
 import requests
 from django.conf import settings
 from django.utils import timezone
@@ -19,6 +22,90 @@ from .serializer import CustomerSerializer
 
 OTP_EXP_MINUTES = 5
 MAX_OTP_ATTEMPTS = 5
+
+
+# --------------------------------------------------
+# PROFILE UPLOAD
+# --------------------------------------------------
+class CustomerUpdateView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Look up the customer using their ID or email
+        customer_id = kwargs.get('customer_id')  # Or use request.data.get('email') if searching by email
+        customer = Customer.objects.filter(id=customer_id).first()  # You can also filter by email if needed
+
+        if not customer:
+            return Response({'error': 'Customer not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Check if base64 image is provided in the request
+        base64_image = request.data.get('profile_image_base64')
+        if base64_image:
+            customer.profile_image_base64 = base64_image
+            customer.save()
+
+            return Response({'status': 'Profile image updated successfully'}, status=status.HTTP_200_OK)
+        
+        return Response({'error': 'No image provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, *args, **kwargs):
+            # Look up the customer using their ID
+            customer_id = kwargs.get('customer_id')
+            customer = Customer.objects.filter(id=customer_id).first()
+
+            if not customer:
+                return Response({'error': 'Customer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Check if customer has an image (Base64-encoded or file)
+            if customer.profile_image_base64:
+                return Response({'profile_image_base64': customer.profile_image_base64}, status=status.HTTP_200_OK)
+            
+            # If no image is available
+            return Response({'error': 'No profile image found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+# --------------------------------------------------
+# FILE UPLOAD
+# --------------------------------------------------
+class CSVUploadAPI(APIView):
+    parser_classes = [MultiPartParser, FormParser]  # Allow file uploads via form-data
+    
+    def post(self, request):
+        csv_file = request.FILES.get('csv_file')
+        
+        if not csv_file:
+            return Response({"error": "csv_file is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Read the CSV file
+        try:
+            data = csv_file.read().decode('utf-8').splitlines()
+            reader = csv.reader(data)
+            next(reader)  # Skip header row
+
+            # Loop through each row in the CSV and create Customer instances
+            for row in reader:
+                if len(row) >= 6:  # Ensure that the CSV row has the expected number of columns
+                    customer_data = {
+                        'name': row[0],
+                        'email': row[1],
+                        'phone': row[2],
+                        'password': make_password(row[3]),  # Ideally, you should hash passwords before saving
+                        'type': row[4],
+                        'telegram_chat_id': row[5] if len(row) > 5 else '',
+                    }
+
+                    print(customer_data)
+                    # Create customer instance using the serializer
+                    serializer = CustomerSerializer(data=customer_data)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            return Response({"message": "CSV uploaded and customers created successfully."}, status=status.HTTP_201_CREATED)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 # --------------------------------------------------

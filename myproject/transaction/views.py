@@ -9,7 +9,16 @@ from .models import Customer
 from .models import Transaction
 from .serializer import TransactionSerializer
 
+import csv
+from rest_framework.parsers import MultiPartParser, FormParser
+
+
 # Create your views here.
+
+
+# --------------------------------------------------
+# FILE UPLOAD
+# --------------------------------------------------
 
 class CSVUploadAPI(APIView):
     parser_classes = (MultiPartParser, FormParser)  # This allows handling file uploads
@@ -29,7 +38,7 @@ class CSVUploadAPI(APIView):
                 # Parse and create transactions from CSV
                 for row in csv_reader:
                     transaction_data = {
-                        'transaction_id': row.get('transaction_id'),
+                        'transaction_id': row.get('\ufefftransaction_id'),
                         'credit_amt': row.get('credit_amt'),
                         'debit_amt': row.get('debit_amt'),
                         'description': row.get('description'),
@@ -42,7 +51,8 @@ class CSVUploadAPI(APIView):
                     # Check if the customer_id exists in the Customer model
                     customer = Customer.objects.filter(id=row.get('customer_id')).first()
                     if not customer:
-                        raise ValidationError(f"Customer with ID {row.get('customer_id')} not found.")
+                        # raise ValidationError(f"Customer with ID {row.get('customer_id')} not found.")
+                        continue  #  if customer not available we go to next customer, push only valid 
 
                     serializer = TransactionSerializer(data=transaction_data)
                     if serializer.is_valid():
@@ -57,6 +67,8 @@ class CSVUploadAPI(APIView):
         
         return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
     
+
+
 class TransactionAPI(APIView):
     
     def post(self, request):
@@ -66,14 +78,19 @@ class TransactionAPI(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, id=None):
+    # def get(self, request, customer_id):
+    #     transactions = Transaction.objects.filter(customer_id=customer_id)
+    #     serializer = TransactionSerializer(transactions, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def get(self, request, customer_id=None):
         if id:
             try:
-                transaction = Transaction.objects.get(id=id)  # Corrected to .objects
+                transactions = Transaction.objects.filter(customer_id=customer_id)  # Corrected to .objects
             except Transaction.DoesNotExist:
                 return Response({'error': "Not Found"}, status=status.HTTP_404_NOT_FOUND)
 
-            serializer = TransactionSerializer(transaction)
+            serializer = TransactionSerializer(transactions, many=True)
             return Response(serializer.data)
 
         transactions = Transaction.objects.all()  # Corrected to .objects

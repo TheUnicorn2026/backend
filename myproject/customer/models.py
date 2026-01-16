@@ -1,5 +1,3 @@
-from django.db import models
-
 
 # class Customer(models.Model):
 #     name = models.CharField(max_length=100)
@@ -14,8 +12,13 @@ from django.db import models
 
 
 from django.db import models
+from django import forms
 from django.utils import timezone
 import uuid
+
+
+class CsvUploadForm(forms.Form):
+    csv_file = forms.FileField()
 
 
 class Customer(models.Model):
@@ -26,6 +29,9 @@ class Customer(models.Model):
     reset_token = models.CharField(max_length=512, blank=True, null=True)
     telegram_chat_id = models.CharField(max_length=50, blank=True, null=True)
 
+    # Store profile image as Base64 string
+    profile_image_base64 = models.TextField(blank=True, null=True)
+    
     type = models.CharField(max_length=50, default='')
     created_at = models.DateTimeField(auto_now_add = True)
 

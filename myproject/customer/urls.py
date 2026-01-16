@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from .views import CustomerAPI, CustomerLoginAPI, CustomerForgotPasswordAPI, CustomerVerifyOTPAPI, CustomerResetPasswordAPI
+from .views import CustomerUpdateView, CSVUploadAPI, CustomerAPI, CustomerLoginAPI, CustomerForgotPasswordAPI, CustomerVerifyOTPAPI, CustomerResetPasswordAPI
 from . import views
 
 # urlpatterns = [
@@ -37,6 +37,12 @@ urlpatterns = [
     path('forgot-password/', CustomerForgotPasswordAPI.as_view()),
     path('verify-otp/', CustomerVerifyOTPAPI.as_view()),
     path('reset-password/', CustomerResetPasswordAPI.as_view()),
+
+    path('upload-csv/', views.CSVUploadAPI.as_view(), name='upload_csv'),
+
+    path('<int:customer_id>/image-upload/', views.CustomerUpdateView.as_view(), name='csvupload_api'),
+    path('<int:customer_id>/image-upload/', views.CustomerUpdateView.as_view(), name='csvupload_api')
+
 ]
 
 

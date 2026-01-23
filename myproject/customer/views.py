@@ -42,7 +42,7 @@ class CustomerUpdateView(APIView):
             customer.profile_image_base64 = base64_image
             customer.save()
 
-            return Response({'status': 'Profile image updated successfully'}, status=status.HTTP_200_OK)
+            return Response({'success': True, 'status': 'Profile image updated successfully'}, status=status.HTTP_200_OK)
         
         return Response({'error': 'No image provided'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -115,7 +115,10 @@ class CustomerAPI(APIView):
 
     def post(self, request):
         data = request.data.copy()
-        data['password'] = make_password(data['password'])
+        if data.get('password') :
+            data['password'] = make_password(data['password'])
+        else:
+            data['password'] = "admin"
 
         serializer = CustomerSerializer(data=data)
         if serializer.is_valid():
